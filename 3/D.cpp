@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <bitset>
 
 using namespace std;
 
@@ -32,21 +33,21 @@ int main(int argc, char *argv[]) {
 	fact_inv[0] = 1;
 	for (int i = 1; i <= 900; i++) fact_inv[i] = pow(fact[i], MOD - 2);
 
-	long ans = 0;
-	// 4つの領域について包除原理
-	ans = count(X, Y, D, L);
-	ans = (ans - 2 * count(X - 1, Y, D, L) % MOD + MOD) % MOD;
-	ans = (ans - 2 * count(X, Y - 1, D, L) % MOD + MOD) % MOD;
-	ans = (ans + count(X - 2, Y, D, L)) % MOD;
-	ans = (ans + 4 * count(X - 1, Y - 1, D, L) % MOD) % MOD;
-	ans = (ans + count(X, Y - 2, D, L)) % MOD;
-	ans = (ans - 2 * count(X - 2, Y - 1, D, L) % MOD + MOD) % MOD;
-	ans = (ans - 2 * count(X - 1, Y - 2, D, L) % MOD + MOD) % MOD;
-	ans = (ans + count(X - 2, Y - 2, D, L)) % MOD;
-
-	ans = (ans * (R - X + 1) % MOD) * (C - Y + 1) % MOD;
+	long m = 0;
+	for (int i = 1; i < (1 << 4); i++) {
+		bitset<4> bits(i);
+		int x = X, y = Y;
+		if (bits[0]) x -= 1;
+		if (bits[1]) x -= 1;
+		if (bits[2]) y -= 1;
+		if (bits[3]) y -= 1;
+		long c = count(x, y, D, L);
+		int sign = (bits.count() % 2) ? 1 : -1;
+		m = (m + sign * c + MOD) % MOD;
+	}
+	long cnt = (count(X, Y, D, L) - m + MOD) % MOD;
 		
-	cout << ans << endl;
+	cout << ((cnt * (R - X + 1) % MOD) * (C - Y + 1) % MOD) << endl;
 
 	return 0;
 }
